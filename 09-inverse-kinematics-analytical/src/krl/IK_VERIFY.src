@@ -1,0 +1,28 @@
+&ACCESS RVP
+&REL 1
+&COMMENT Analytical Inverse Kinematics Verification
+DEF IK_VERIFY( )
+  ; =========================================================
+  ; Lesson 09: Inverse Kinematics & Status/Turn Verification
+  ; Robot: KUKA KR 6 R900-2 (KR AGILUS-2)
+  ; =========================================================
+
+  ; INI
+  BAS (#INITMOV, 0)
+  $VEL.CP = 0.3
+  $ACC.CP = 1.0
+
+  ; Move to safe Home
+  PTP XHOME
+
+  ; Move to Cartesian pose with explicit Status (S) and Turn (T)
+  ; to ensure unique unambiguous inverse kinematics branch selection
+  PTP P_TARGET_WITH_ST
+
+  ; Verify reached joint angles
+  ACTUAL_AXIS = $AXIS_ACT
+
+  ; Return Home
+  PTP XHOME
+
+END

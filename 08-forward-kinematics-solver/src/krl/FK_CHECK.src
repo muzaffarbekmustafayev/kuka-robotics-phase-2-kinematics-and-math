@@ -1,0 +1,27 @@
+&ACCESS RVP
+&REL 1
+&COMMENT Forward Kinematics Verification
+DEF FK_CHECK( )
+  ; =========================================================
+  ; Lesson 08: Forward Kinematics Check on KUKA KR 6 R900-2
+  ; Compares analytical FK model with KUKA internal $POS_ACT
+  ; =========================================================
+
+  ; INI
+  BAS (#INITMOV, 0)
+  $VEL.CP = 0.5
+  $ACC.CP = 1.0
+
+  ; Move to Home Position
+  PTP XHOME
+
+  ; Move to verification point using Joint coordinates
+  PTP P_VERIFY_AXIS
+
+  ; Read actual Cartesian flange pose calculated by KRC
+  P_CALCULATED_POS = $POS_ACT
+
+  ; Return to safe home
+  PTP XHOME
+
+END

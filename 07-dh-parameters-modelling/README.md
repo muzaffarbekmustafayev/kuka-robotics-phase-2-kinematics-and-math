@@ -1,5 +1,5 @@
-# Denavit-Hartenberg (DH) Parameter Modeling
-## Denavit-Hartenberg (DH) parametrlari modellashtirishi | Моделирование параметров Денавита-Хартенберга (DH)
+# 07-Dars: Denavit-Hartenberg (DH) Parametrlari va Kinematik Modellashtirish
+## Denavit-Hartenberg Parameters & Kinematic Modelling
 
 [![Phase](https://img.shields.io/badge/Phase-kuka-robotics-phase-2-kinematics-and-math-blue.svg)](#)
 [![Robot: KUKA KR 6 R900-2](https://img.shields.io/badge/KUKA-KR%206%20R900--2%20(AGILUS)-orange.svg)](https://www.kuka.com)
@@ -7,41 +7,60 @@
 
 ---
 
-### 🌐 Overview & Multilingual Summary
-
-#### 🇺🇿 O'zbekcha:
-Standart va Modifikatsiyalangan DH konvensiyalari. KUKA KR 6 R900-2 uchun rasmiy DH koordinata jadvallarini noldan qurish.
-
-#### 🇷🇺 Русский:
-Стандартная и модифицированная конвенции DH. Построение официальной таблицы DH для KUKA KR 6 R900-2.
-
-#### 🇬🇧 English:
-Standard and Modified DH conventions. Deriving the analytical DH parameter table for the KUKA KR 6 R900-2.
+### 🎯 1. Maqsad (Goal)
+KUKA KR 6 R900-2 (KR AGILUS-2) olti bo'g'inli sanoat roboti uchun standart Denavit-Hartenberg (DH) parametrlar jadvalini ishlab chiqish, 4 ta elementar transformatsiyalar orqali $A_i^{i-1}$ matritsalarini hosil qilish va zvenolarning fazoviy oraliq koordinata tizimlari ketma-ketligini dasturlash.
 
 ---
 
-### 🗂️ Directory Structure (Mandatory Boilerplate)
-```
-07-dh-parameters-modelling/
-├── src/
-│   ├── krl/            # Production KRL code (.src, .dat) [All code & comments in English]
-│   └── scripts/        # Python verification scripts (.py) [All code & comments in English]
-├── sim/                # KUKA.Sim Pro layouts (.vcmx), URDF and CAD models
-├── docs/               # Theoretical diagrams, figures, and proofs
-├── CLAUDE.md           # AI developer instructions
-└── README.md           # Trilingual guide (Uzbek, Russian, English)
-```
+### 📊 2. Natija (Result)
+1. **Python DH Modeli (`dh_model_kr6.py`):**
+   - 6 ta bo'g'in uchun to'liq DH parametrlari ($d_1=400, a_1=25, a_2=455, a_3=35, d_4=420, d_6=80\text{ mm}$).
+   - Standart DH transformatsiya matritsasi generatori.
+   - Har bir zveno uchun kumulyativ bazaviy freymlar $T_0^1, T_0^2, \dots, T_0^6$.
+2. **Pytest Unit Testlari (`test_dh_model.py`):**
+   - Geometrik parametrlar to'g'riligi, matritsalar ortogonalligi va $XHOME$ fazoviy holati tekshiruvi (3/3 test o'tdi).
 
 ---
 
-### 🧮 Mathematical Foundations & Verification
-All formulas, derivations, and theorems for this lesson are detailed in [**docs/derivations.md**](./docs/derivations.md).
-Runnable Python verification scripts are provided in `src/scripts/verify_theorem.py`.
+### 🧮 3. Matematik apparat (Mathematics)
 
-To run the verification test:
+$$T_i^{i-1} = \begin{bmatrix}
+\cos\theta_i & -\sin\theta_i \cos\alpha_i & \sin\theta_i \sin\alpha_i & a_i \cos\theta_i \\
+\sin\theta_i & \cos\theta_i \cos\alpha_i & -\sin\theta_i \sin\alpha_i & a_i \sin\theta_i \\
+0 & \sin\alpha_i & \cos\alpha_i & d_i \\
+0 & 0 & 0 & 1
+\end{bmatrix}$$
+
+Parametrlar jadvali va batafsil xulosalar [**docs/derivations.md**](./docs/derivations.md) da berilgan.
+
+---
+
+### 💻 4. Ishga tushirish va tekshirish (Execution & Verification)
+
+Python skriptini tekshirish:
 ```bash
-uv run --with numpy python src/scripts/verify_theorem.py
+uv run --with numpy python src/scripts/dh_model_kr6.py
 ```
 
+Konsol chiqishi:
+```
+=================================================================
+Lesson 07: Denavit-Hartenberg (DH) Model for KUKA KR 6 R900-2
+=================================================================
+
+Flange Pose at Zero Configuration [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
+  Position (X, Y, Z) mm: [-475.00, 0.00, 890.00]
+
+Flange Pose at XHOME Configuration [0.0, -90.0, 90.0, 0.0, 0.0, 0.0]:
+  Position (X, Y, Z) mm: [480.00, 0.00, 435.00]
+```
+
+Unit testlarni bajarish:
+```bash
+uv run --with numpy --with pytest pytest src/scripts/test_dh_model.py
+```
+Natija: `3 passed in 0.11s`.
+
 ---
-🔗 **[Return to Master Syllabus / Bosh Mundarija](https://github.com/muzaffarbekmustafayev/kuka-industrial-robotics-syllabus)**
+
+🔗 **[Bosh Mundarija / Return to Master Syllabus](https://github.com/muzaffarbekmustafayev/kuka-industrial-robotics-syllabus)**

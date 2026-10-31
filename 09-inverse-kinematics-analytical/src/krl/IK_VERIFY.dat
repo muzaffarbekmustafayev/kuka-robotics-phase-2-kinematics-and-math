@@ -1,0 +1,8 @@
+&ACCESS RVP
+&REL 1
+&COMMENT Data for Analytical IK Verification
+DEFDAT IK_VERIFY
+  ; Target Cartesian pose with Status = 2, Turn = 35
+  DECL E6POS P_TARGET_WITH_ST = {X 480.0, Y 0.0, Z 435.0, A 0.0, B 90.0, C 0.0, S 2, T 35}
+  DECL AXIS ACTUAL_AXIS
+ENDDAT

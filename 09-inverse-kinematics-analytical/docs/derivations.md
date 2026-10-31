@@ -1,51 +1,45 @@
-# Pieper's Closed-Form Inverse Kinematics Theorem for Spherical Wrists
-## Matematik Isbot va KUKA KR 6 R900-2 uchun Hisoblash
+# Pieper Kriteriyasi Asosida Analitik Teskari Kinematika (IK)
 
-### Asosiy Formula:
-$$\vec{p}_{wc} = \vec{p}_e - d_6 \vec{a}, \quad R_3^6 = (R_0^3)^T R_{target}$$
+## 1. Kinematik ajratish (Kinematic Decoupling)
+Pieper teoremasiga muvofiq, agar 6R manipulyatorning so'nggi 3 ta aylanma o'qlari ($A_4, A_5, A_6$) bitta sferik nuqtada (bilak markazi $P_w$) kesishsa, robotning teskari kinematikasi ikkita mustaqil sub-muammoga ajraladi:
+1. Pozitsion qism: $A_1, A_2, A_3$ yordamida bilak markazi $P_w$ koordinatasini ta'minlash.
+2. Orientatsion qism: $A_4, A_5, A_6$ yordamida asbob flanetsining talab qilingan orientatsiyasini ta'minlash.
+
+Bilak markazi formulasi:
+$$P_w = P_{tcp} - d_6 \cdot \mathbf{a}$$
+bu yerda $\mathbf{a} = R_{target} \cdot [0, 0, 1]^T$ — flanetsning normal vektori.
 
 ---
 
-### 1. Nazariy Asos va Teorema (Pieper Kriteriyasi)
-6 erkinlik darajali robot manipulyatorlari uchun umumiy holda teskari kinematika 16-darajali polinomial tenglamaga olib keladi.
+## 2. Pozitsion qismni yechish ($A_1, A_2, A_3$)
+1. **$A_1$ burchagi:**
+   $$A_1 = \text{atan2}(P_{wy}, P_{wx}) \quad \text{yoki} \quad A_1 = \text{atan2}(-P_{wy}, -P_{wx}) \quad (2\text{ ta yechim})$$
+2. **$A_3$ tirsak burchagi (Kosinuslar teoremasi):**
+   $$r = \sqrt{P_{wx}^2 + P_{wy}^2} - a_1, \quad z = P_{wz} - d_1$$
+   $$D = \frac{r^2 + z^2 - a_2^2 - L_4^2}{2 a_2 L_4}$$
+   bu yerda $L_4 = \sqrt{a_3^2 + d_4^2}$.
+   $$A_3 = \pm \arccos(D) - \delta \quad (2\text{ ta yechim: tirsak tepada / pastda})$$
+3. **$A_2$ yelka burchagi:**
+   $$A_2 = \text{atan2}(z, r) - \text{atan2}(L_4 \sin(A_3 + \delta), a_2 + L_4 \cos(A_3 + \delta))$$
 
-> **Teorema (Pieper Kriteriyasi):**
-> Agar manipulyatorning oxirgi uchta bo'g'in o'qi ($A_4, A_5, A_6$) bitta umumiy nuqtada (sferik bilak markazi — Wrist Center $\vec{p}_{wc}$) kesishsa, 6-DoF teskari kinematika masalasi to'liq analitik (yopiq shaklda) ikkita mustaqil qismga ajraladi (decoupling):
-> 1. **Pozitsiyani ajratish:** Birinchi 3 ta bo'g'in ($q_1, q_2, q_3$) faqat bilak markazi pozitsiyasini $\vec{p}_{wc}$ ta'minlaydi.
-> 2. **Orientatsiyani ajratish:** Qolgan 3 ta bilak bo'g'ini ($q_4, q_5, q_6$) faqat effektor yo'nalishini ta'minlaydi.
+---
 
-### 2. Qadam-baqadam Matematik Keltirib Chiqarilishi
-#### 2.1 Bilak Markazini Topish:
-Effektorning maqsadli holati berilgan: $T_{target} = \begin{bmatrix} R_{target} & \vec{p}_e \\ \vec{0}^T & 1 \end{bmatrix}$.
-Effektorning yaqinlashish vektori (approach vector) $\vec{a} = R_{target}[:, 2]$ (3-ustun).
-Sferik bilak markazi $\vec{p}_{wc}$:
-$$\vec{p}_{wc} = \vec{p}_e - d_6 \vec{a}$$
-
-#### 2.2 Birinchi Bo'g'in Burchagi $q_1$:
-$$\theta_1 = \text{atan2}(p_{wc, y}, p_{wc, x})$$
-Ikkinchi yechim: $q_1' = q_1 + \pi$ (orqaga burilish).
-
-#### 2.3 $q_2$ va $q_3$ Burchaklari (Tirsak baland/past):
-Planar 2 zvenoli geometriyada kosinuslar teoremasidan:
-$$r^2 = p_{wc, x}^2 + p_{wc, y}^2 - a_1^2, \quad s = p_{wc, z} - d_1$$
-$$D = \frac{r^2 + s^2 - a_2^2 - (a_3^2 + d_4^2)}{2 a_2 \sqrt{a_3^2 + d_4^2}}$$
-$$q_3 = \text{atan2}(\pm \sqrt{1 - D^2}, D) - \text{atan2}(a_3, d_4)$$
-Bu 2 ta yechim beradi: **Elbow Up** va **Elbow Down**.
-So'ngra $q_2$ trigonometrik tarzda aniqlanadi.
-
-#### 2.4 Bilak Burchaklari ($q_4, q_5, q_6$):
-Birinchi uchta bo'g'in burchaklari ma'lum bo'lgach, $R_0^3(q_1, q_2, q_3)$ matritsasi hisoblanadi:
+## 3. Sferik bilak orientatsiyasi ($A_4, A_5, A_6$)
 $$R_3^6 = (R_0^3)^T \cdot R_{target}$$
-$R_3^6$ sferik bilakning $Z-Y-Z$ yoki $X-Y-X$ ekvivalent aylanishi bo'lgani sababli:
-$$q_5 = \pm \arccos(R_{33}^{36})$$
-$$q_4 = \text{atan2}(R_{23}^{36}, R_{13}^{36}), \quad q_6 = \text{atan2}(R_{32}^{36}, -R_{31}^{36})$$
-Bu 2 ta yechim beradi: **Wrist Flip** ($q_5 > 0$) va **Wrist No-Flip** ($q_5 < 0$).
+$Z-Y-Z$ yoki mos Euler dekompozitsiyasi orqali:
+$$A_5 = \pm \arccos(R_{33}^{3\to 6}) \quad (2\text{ ta yechim: wrist flip / non-flip})$$
+$$A_4 = \text{atan2}(R_{23}^{3\to 6}, R_{13}^{3\to 6})$$
+$$A_6 = \text{atan2}(R_{32}^{3\to 6}, -R_{31}^{3\to 6})$$
 
-### 3. Jami 8 Ta Yechim va KUKA Status ($S$) hamda Turn ($T$)
-Jami analitik yechimlar soni: $2 (q_1) \times 2 (q_3) \times 2 (q_5) = 8$ ta.
-KUKA KSS tizimida ushbu yechimlardan aynan qaysi birini tanlash **Status ($S$)** butun sonining 3 ta biti orqali boshqariladi:
-* **Bit 0:** $p_{wc, z} < \text{shoulder level}$ (overhead)
-* **Bit 1:** $q_3$ Elbow Up / Down
-* **Bit 2:** $q_5$ Wrist Flip / No-flip
-**Turn ($T$)** esa har bir o'qning manfiy diapazonda ekanligini bildiradi ($q_i < 0$).
+Umumiy yechimlar soni: $2 \times 2 \times 2 = 8$ ta analitik konfiguratsiya.
 
+---
+
+## 4. KUKA Status (S) va Turn (T) Bitmasklari
+KUKA kontrollerida fazodagi bitta kartesian nuqtaga bir nechta konfiguratsiyadan qaysi biri mos kelishini aniqlash uchun Status va Turn ishlatiladi:
+- **Status (S, 3 bit):**
+  - Bit 0: Bilak markazi z-o'qiga nisbatan holati
+  - Bit 1: Yelka holati ($A_2$)
+  - Bit 2: Tirsak holati ($A_3$)
+- **Turn (T, 6 bit):**
+  - Bit $i = 1$ agar $A_{i+1} < 0^\circ$, aks holda $0$.
